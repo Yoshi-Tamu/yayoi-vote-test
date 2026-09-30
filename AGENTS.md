@@ -34,3 +34,4 @@ githubのhttps://github.com/Yoshi-Tamu/yayoi-vote-testリポジトリを使う�
 # Verification
 
 変更した領域に応じて、関連テスト・typecheck・lint・buildを実行する。
+`npm run typecheck` の `svelte-kit sync` と `npm run build` は生成物を共有するため、並列実行せずtypecheckの完了後にbuildを実行する。
