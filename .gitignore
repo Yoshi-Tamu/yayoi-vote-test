@@ -1,0 +1,12 @@
+node_modules/
+.svelte-kit/
+build/
+.wrangler/
+.wrangler-config/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+coverage/
+dist/
+*.log
+

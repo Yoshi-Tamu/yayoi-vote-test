@@ -1,0 +1,4 @@
+ADMIN_PIN=1234
+VOTER_PIN=5678
+SESSION_SECRET=replace-with-a-long-random-value
+
