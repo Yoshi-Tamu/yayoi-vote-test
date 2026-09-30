@@ -138,7 +138,7 @@
           id="pin"
           type="password"
           inputmode="numeric"
-          pattern="[0-9]{4}"
+          pattern="[0-9][0-9][0-9][0-9]"
           maxlength="4"
           autocomplete="off"
           bind:value={pin}
