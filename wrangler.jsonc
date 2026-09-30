@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "yayoi-vote-test",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "fcd08594-b567-4b1d-adc9-e74c6b0c8441",
       "migrations_dir": "migrations"
     }
   ]

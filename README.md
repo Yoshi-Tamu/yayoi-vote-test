@@ -25,14 +25,18 @@ npm run lint
 npm run build
 ```
 
-## 本番セットアップ
+## 本番環境
 
-本番用Cloudflare環境を作成する際に、以下が必要です。
+- URL: `https://yayoi-vote-test.nemuri3-zzz.workers.dev`
+- D1: `yayoi-vote-test`
 
-1. D1データベース `yayoi-vote-test` を作成する
-2. `wrangler.jsonc` の `database_id` を実際のIDに置き換える
-3. `ADMIN_PIN`、`VOTER_PIN`、`SESSION_SECRET` をCloudflare Secretsへ登録する
-4. リモートD1へマイグレーションを適用する
-5. Workerをデプロイする
+`ADMIN_PIN`、`VOTER_PIN`、`SESSION_SECRET` はCloudflare Secretsに登録し、リポジトリには保存しません。
+
+マイグレーションを追加した場合は、デプロイ前に次を実行します。
+
+```powershell
+npm run db:migrate:remote
+npm run deploy
+```
 
 リモートD1の変更とデプロイはCloudflare環境を変更するため、実行前に承認を得てください。
