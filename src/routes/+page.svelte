@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, tick } from 'svelte';
   import type { PollView, VoteReceipt } from '../../shared/types';
   import { ApiError, apiRequest } from '$lib/api';
 
@@ -13,6 +13,7 @@
   let error = '';
   let returnTimer: number | undefined;
   let pollLoadedAt = 0;
+  let confirmation: HTMLDialogElement;
 
   function formatDate(value: string): string {
     return new Intl.DateTimeFormat('ja-JP', {
@@ -67,6 +68,8 @@
         body: JSON.stringify({ optionId, requestId: crypto.randomUUID() })
       });
       screen = 'thanks';
+      await tick();
+      confirmation.showModal();
       scheduleReturn();
     } catch (cause) {
       error = cause instanceof Error ? cause.message : '投票に失敗しました';
@@ -109,7 +112,9 @@
 
   function returnToVote() {
     clearReturnTimer();
+    confirmation.close();
     receipt = null;
+    screen = 'vote';
     if (Date.now() - pollLoadedAt >= 60_000) {
       void loadPoll();
       return;
@@ -126,7 +131,7 @@
   onDestroy(clearReturnTimer);
 </script>
 
-<main class="page">
+<main class="page voter-page" class:ballot-view={poll && screen !== 'pin' && screen !== 'loading'}>
   {#if screen === 'loading'}
     <p>読み込み中</p>
   {:else if screen === 'pin'}
@@ -148,25 +153,17 @@
       <button class="primary" type="submit" disabled={submitting || pin.length !== 4}>開く</button>
     </form>
     {#if error}<p class="error" role="alert">{error}</p>{/if}
-  {:else if screen === 'thanks'}
-    <h1>投票ありがとうございます</h1>
-    {#if error}<p class="error" role="alert">{error}</p>{/if}
-    <div class="stack">
-      <button class="primary" type="button" on:click={returnToVote}>戻る</button>
-      <button type="button" on:click={cancelVote} disabled={submitting}>今の投票を取り消す</button>
-    </div>
-  {:else if screen === 'cancelled'}
-    <h1>投票を取り消しました</h1>
-    <button class="primary" type="button" on:click={returnToVote}>戻る</button>
   {:else if poll}
-    <h1>{poll.title}</h1>
-    {#if poll.closesAt}
-      <p class="muted">受付期限: {formatDate(poll.closesAt)}</p>
-    {/if}
+    <header class="ballot-header">
+      <h1>{poll.title}</h1>
+      {#if poll.closesAt}
+        <p class="muted">受付期限: {formatDate(poll.closesAt)}</p>
+      {/if}
+    </header>
     {#if poll.status === 'open' && poll.options.length > 0}
-      <div class="stack" aria-label="投票先">
+      <div class="choices" aria-label="投票先">
         {#each poll.options as option (option.id)}
-          <button class="primary" type="button" on:click={() => vote(option.id)} disabled={submitting}>
+          <button class="primary choice" type="button" on:click={() => vote(option.id)} disabled={submitting}>
             {option.label}
           </button>
         {/each}
@@ -176,6 +173,128 @@
     {:else}
       <p>現在、投票を受け付けていません。</p>
     {/if}
-    {#if error}<p class="error" role="alert">{error}</p>{/if}
+    {#if error && screen === 'vote'}<p class="error" role="alert">{error}</p>{/if}
   {/if}
 </main>
+
+<dialog
+  bind:this={confirmation}
+  class="confirmation"
+  aria-labelledby="confirmation-title"
+  on:cancel|preventDefault
+>
+  <h2 id="confirmation-title" aria-live="polite">
+    {screen === 'cancelled' ? '投票を取り消しました' : '投票ありがとうございます'}
+  </h2>
+  {#if error}<p class="error" role="alert">{error}</p>{/if}
+  <div class="stack">
+    <button class="primary" type="button" on:click={returnToVote} disabled={submitting}>戻る</button>
+    {#if screen === 'thanks'}
+      <button class="cancel-vote" type="button" on:click={cancelVote} disabled={submitting}>
+        今の投票を取り消す
+      </button>
+    {/if}
+  </div>
+</dialog>
+
+<style>
+  .voter-page button,
+  .confirmation button {
+    border-radius: 12px;
+  }
+
+  .ballot-view {
+    width: min(100% - 4rem, 1000px);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.5rem 0;
+  }
+
+  .ballot-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .ballot-header h1 {
+    margin: 0;
+  }
+
+  .ballot-header p {
+    margin: 0.5rem 0 0;
+  }
+
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .choices .choice {
+    flex: 0 0 calc((100% - 2rem) / 3);
+    min-width: 0;
+    min-height: 108px;
+    padding: 1.25rem;
+    border-radius: 16px;
+    font-size: 18px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+    touch-action: manipulation;
+  }
+
+  .confirmation {
+    width: min(100% - 2.5rem, 440px);
+    max-height: calc(100svh - 2.5rem);
+    padding: 2rem;
+    border: 0;
+    border-radius: 20px;
+    color: #1a1a1a;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 16px 48px rgb(0 0 0 / 16%);
+  }
+
+  .confirmation::backdrop {
+    background: rgb(0 0 0 / 35%);
+  }
+
+  .confirmation h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    text-wrap: balance;
+  }
+
+  .confirmation .cancel-vote {
+    border-color: transparent;
+    color: #555;
+    background: transparent;
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .confirmation .cancel-vote:hover:not(:disabled) {
+    background: #f6f6f4;
+  }
+
+  @media (max-width: 767px) {
+    .ballot-view {
+      width: calc(100% - 2rem);
+    }
+
+    .choices .choice {
+      flex-basis: calc((100% - 1rem) / 2);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .choices .choice {
+      flex-basis: 100%;
+      min-height: 88px;
+    }
+  }
+</style>
