@@ -14,6 +14,7 @@
   let returnTimer: number | undefined;
   let pollLoadedAt = 0;
   let confirmation: HTMLDialogElement;
+  let lastVoteButton: HTMLButtonElement | null = null;
 
   function formatDate(value: string): string {
     return new Intl.DateTimeFormat('ja-JP', {
@@ -58,8 +59,9 @@
     }
   }
 
-  async function vote(optionId: string) {
+  async function vote(optionId: string, button: HTMLButtonElement) {
     if (submitting) return;
+    lastVoteButton = button;
     submitting = true;
     error = '';
     try {
@@ -113,6 +115,7 @@
   function returnToVote() {
     clearReturnTimer();
     confirmation.close();
+    lastVoteButton?.focus({ preventScroll: true });
     receipt = null;
     screen = 'vote';
     if (Date.now() - pollLoadedAt >= 60_000) {
@@ -163,7 +166,7 @@
     {#if poll.status === 'open' && poll.options.length > 0}
       <div class="choices" aria-label="投票先">
         {#each poll.options as option (option.id)}
-          <button class="primary choice" type="button" on:click={() => vote(option.id)} disabled={submitting}>
+          <button class="primary choice" type="button" on:click={(event) => vote(option.id, event.currentTarget)} disabled={submitting}>
             {option.label}
           </button>
         {/each}
