@@ -2,6 +2,7 @@
   import { onDestroy, onMount, tick } from 'svelte';
   import type { PollView, VoteReceipt } from '../../shared/types';
   import { ApiError, apiRequest } from '$lib/api';
+  import { fitChoiceText } from '$lib/fitChoiceText';
 
   type Screen = 'loading' | 'pin' | 'vote' | 'thanks' | 'cancelled';
 
@@ -167,7 +168,7 @@
       <div class="choices" aria-label="投票先">
         {#each poll.options as option (option.id)}
           <button class="primary choice" type="button" on:click={(event) => vote(option.id, event.currentTarget)} disabled={submitting}>
-            {option.label}
+            <span class="choice-label" use:fitChoiceText={option.label}>{option.label}</span>
           </button>
         {/each}
       </div>
@@ -238,14 +239,22 @@
   .choices .choice {
     flex: 0 0 calc((100% - 2rem) / 3);
     min-width: 0;
-    min-height: 108px;
-    padding: 1.25rem;
+    height: 108px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 16px;
-    font-size: 18px;
-    line-height: 1.5;
+    font-size: 36px;
+    line-height: 1.2;
     overflow-wrap: anywhere;
     text-wrap: balance;
     touch-action: manipulation;
+  }
+
+  .choice-label {
+    display: block;
+    width: 100%;
   }
 
   .confirmation {
@@ -297,7 +306,7 @@
   @media (max-width: 520px) {
     .choices .choice {
       flex-basis: 100%;
-      min-height: 88px;
+      height: 88px;
     }
   }
 </style>
