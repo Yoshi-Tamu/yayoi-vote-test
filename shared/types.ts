@@ -43,6 +43,19 @@ export interface VotePage {
   nextCursor: string | null;
 }
 
+export interface RankedOption {
+  id: string;
+  label: string;
+  votes: number;
+  rank: number;
+  tied: boolean;
+}
+
+export interface ResultsView {
+  title: string;
+  entries: RankedOption[];
+}
+
 export type ApiSuccess<T> = { ok: true; data: T };
 export type ApiFailure = {
   ok: false;

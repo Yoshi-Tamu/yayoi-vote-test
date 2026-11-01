@@ -3,6 +3,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import auth from './routes/auth';
 import admin from './routes/admin';
 import poll from './routes/poll';
+import results from './routes/results';
 import { protectMutations } from './middleware/auth';
 import type { AppEnv } from './types';
 
@@ -12,6 +13,7 @@ app.use('/api/*', secureHeaders());
 app.use('/api/*', protectMutations);
 app.route('/api/auth', auth);
 app.route('/api', poll);
+app.route('/api', results);
 app.route('/api/admin', admin);
 
 app.get('/api/health', (c) => c.json({ ok: true as const, data: { status: 'ok' as const } }));

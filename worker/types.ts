@@ -5,6 +5,7 @@ export interface Bindings {
   ADMIN_PIN: string;
   VOTER_PIN: string;
   SESSION_SECRET: string;
+  RESULTS_EXCLUDED_OPTION_ID: string;
 }
 
 export type SessionRole = 'admin' | 'voter';
