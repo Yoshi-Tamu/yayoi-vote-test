@@ -40,6 +40,7 @@
       <li><a href="#chat">ブラウザーで使う</a></li>
       <li><a href="#speed">MTPと速度の調整</a></li>
     </ol>
+    <a href="#make-launcher">起動.cmdをメモ帳で作る</a><br />
     <a href="#troubleshooting">困ったとき</a>
   </nav>
 
@@ -87,11 +88,24 @@
       <p>開いたフォルダで <strong>Start-Qwen.cmdをダブルクリック</strong>します。起動中は黒いウィンドウを開いたままにします。</p>
       <p>「ファイルが見つかりません」と出た場合は、表示されたパスを確認してください。ZIPの中身は <code>bin</code> の直下に展開し、GGUFは <code>models</code> に指定の名前で保存します。</p>
     </details>
-    <details>
-      <summary>通常版の起動設定を見る</summary>
-      <p>以下は作成されるCMDファイルの内容です。メモ帳で手動保存する場合に使います。</p>
-      <CommandBlock label="Start-Qwen.cmdの内容" command={startCommand} />
-    </details>
+    <div id="make-launcher" class="manual-launcher">
+      <h3>起動.cmdをメモ帳で作る</h3>
+      <p>起動ファイルを保存すると、次回からダブルクリックで起動できます。以下は手順04の1行コマンドと同じ設定です。</p>
+      <ol class="instructions">
+        <li>2080 TiのPCで<strong>メモ帳</strong>を開き、新しいファイルに下のコードを丸ごと貼り付けます。</li>
+      </ol>
+      <CommandBlock label="メモ帳に貼る：起動.cmdの内容" command={startCommand} />
+      <ol class="instructions" start="2">
+        <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> で<strong>「名前を付けて保存」</strong>を開きます。</li>
+        <li>保存先を <code>C:\LocalLLM\Qwen3.8</code> にします。<code>bin</code> と <code>models</code> が見えるフォルダです。</li>
+        <li>ファイル名に <strong><code>起動.cmd</code></strong> と入力します。</li>
+        <li>ファイルの種類を<strong>「すべてのファイル (*.*)」</strong>、文字コードを<strong>「UTF-8」</strong>にして保存します。</li>
+        <li>エクスプローラーでファイル名の拡張子を表示し、名前が <code>起動.cmd</code> であることを確認します。<code>起動.cmd.txt</code> になっていたら、末尾の <code>.txt</code> を削除して名前を変更してください。</li>
+      </ol>
+      <p>完成したファイルの場所は <strong><code>C:\LocalLLM\Qwen3.8\起動.cmd</code></strong> です。</p>
+      <p>すでに1行コマンドでサーバーを起動している場合は、そのPowerShellで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押して終了します。その後、<strong>起動.cmdをダブルクリック</strong>してください。読み込みが終わったら、同じPCのブラウザーで <code>http://127.0.0.1:8080</code> を開きます。</p>
+      <p class="muted">起動ファイルの名前は自由です。この方法で作る <code>起動.cmd</code> と、上のPowerShellで作る <code>Start-Qwen.cmd</code> は同じ設定で動きます。</p>
+    </div>
     <p>GPUへの割り当ては起動時に自動調整し、VRAMに約1GBの余裕を確保する設定です。CPUスレッド数は自動設定から始めます。</p>
   </section>
 
@@ -102,7 +116,7 @@
       <li>アドレス欄に <code>http://127.0.0.1:8080</code> と入力します。</li>
       <li>新しいチャットを作り、「日本語で自己紹介して」と送って返答を確認します。</li>
     </ol>
-    <p>終了するときは、サーバーを起動したウィンドウで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押します。ブラウザーを閉じただけではモデルは終了しません。次回は手順04の1行コマンドを再実行します。起動ファイルを保存した場合は <code>Start-Qwen.cmd</code> からも起動できます。</p>
+    <p>終了するときは、サーバーを起動したウィンドウで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押します。ブラウザーを閉じただけではモデルは終了しません。次回は手順04の1行コマンドを再実行するか、作成した <code>起動.cmd</code> または <code>Start-Qwen.cmd</code> をダブルクリックします。</p>
     <p>初期設定はThinkingをオフにしています。長く考えさせる設定は出力トークンが増えるため、完了までの時間も長くなります。チャットを分ける場合はWeb UIの新しいチャットを使います。</p>
     <div class="note"><strong>このページはセットアップの説明です。</strong> 上の <code>127.0.0.1</code> は、ブラウザーを開いた端末自身を指します。スマホから2080 Tiのモデルへ接続する設定は含みません。サーバーはPC内からのみ接続できる設定です。</div>
     <details>
@@ -199,6 +213,8 @@
   .contents ol { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem; padding-left: 1.5rem; }
   .section { margin-top: 2.5rem; padding-top: 2rem; scroll-margin-top: 1.5rem; }
   .instructions, .tips { padding-left: 1.5rem; }
+  .manual-launcher { margin-top: 2rem; scroll-margin-top: 1.5rem; }
+  h3 { margin: 0 0 1rem; font-size: 1.1rem; line-height: 1.5; }
   li + li { margin-top: 0.6rem; }
   .contents li + li { margin-top: 0; }
   .note { padding: 1rem 1.25rem; border-left: 3px solid #174f86; background: #edf2f6; line-height: 1.8; }
