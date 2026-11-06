@@ -54,7 +54,23 @@ export const startMtpCommand = startCommand.replace(
   '  --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-ngl 0 ^\n  --jinja --reasoning off ^'
 );
 
-export const saveLaunchersCommand = `# 起動ファイルを2つ作成します。実行するのはどちらか1つです。
+export const saveLaunchersCommand = String.raw`$ErrorActionPreference = 'Stop'
+$root = 'C:\LocalLLM\Qwen3.8'
+
+# 手動でダウンロードした場合も、この手順から実行できます。
+$requiredFiles = @(
+    'bin\llama-server.exe',
+    'bin\ggml-cuda.dll',
+    'models\Qwen3.8-27B-UD-Q4_K_M.gguf'
+)
+foreach ($relativePath in $requiredFiles) {
+    $filePath = Join-Path $root $relativePath
+    if (-not (Test-Path -LiteralPath $filePath -PathType Leaf)) {
+        throw "ファイルが見つかりません: $filePath"
+    }
+}
+
+# 起動ファイルを2つ作成します。実行するのはどちらか1つです。
 Set-Content -LiteralPath (Join-Path $root 'Start-Qwen.cmd') -Encoding Ascii -Value @'
 ${startCommand}
 '@
@@ -63,4 +79,5 @@ Set-Content -LiteralPath (Join-Path $root 'Start-Qwen-MTP.cmd') -Encoding Ascii 
 ${startMtpCommand}
 '@
 
+Write-Host "起動ファイルを作成しました: $root"
 Start-Process explorer.exe -ArgumentList $root`;

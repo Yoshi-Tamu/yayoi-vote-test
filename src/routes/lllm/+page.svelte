@@ -76,11 +76,14 @@
 
   <section id="launch" class="section">
     <h2><span class="step">04</span> 起動ファイルを作成</h2>
-    <p>通常版の <code>Start-Qwen.cmd</code> と、任意で試せるMTP版の <code>Start-Qwen-MTP.cmd</code> を作成します。以下はファイルを保存するコマンドです。</p>
+    <p><strong>手動で本体・DLL・モデルの配置まで終わっている場合は、ここから進められます。</strong> 2080 TiのPCでWindows PowerShellを開き、下の「PowerShell：起動ファイルを保存」をコピーして貼り付け、Enterを押してください。</p>
+    <p>通常版の <code>Start-Qwen.cmd</code> と、任意で試せるMTP版の <code>Start-Qwen-MTP.cmd</code> を作成します。このコマンド内で保存先を指定するため、新しく開いたPowerShellでも実行できます。</p>
     <CommandBlock label="PowerShell：起動ファイルを保存" command={saveLaunchersCommand} />
     <p>開いたフォルダで、まず <strong>Start-Qwen.cmdをダブルクリック</strong>します。黒いウィンドウにログが流れ、モデルを読み込みます。起動中はこのウィンドウを開いたままにします。</p>
+    <p>「ファイルが見つかりません」と出た場合は、表示されたパスを確認してください。ZIPの中身が <code>bin</code> の直下に展開されているか、GGUFが <code>models</code> に指定の名前で保存されているかを確認します。</p>
     <details>
       <summary>通常版の起動設定を見る</summary>
+      <p>以下は作成されるCMDファイルの内容です。メモ帳で手動保存する場合に使います。</p>
       <CommandBlock label="Start-Qwen.cmdの内容" command={startCommand} />
     </details>
     <p>GPUへの割り当ては起動時に自動調整し、VRAMに約1GBの余裕を確保する設定です。CPUスレッド数は自動設定から始めます。</p>
