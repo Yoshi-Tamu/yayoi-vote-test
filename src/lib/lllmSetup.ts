@@ -54,30 +54,28 @@ export const startMtpCommand = startCommand.replace(
   '  --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-ngl 0 ^\n  --jinja --reasoning off ^'
 );
 
-export const saveLaunchersCommand = String.raw`$ErrorActionPreference = 'Stop'
-$root = 'C:\LocalLLM\Qwen3.8'
+export const directStartCommand = String.raw`& "C:\LocalLLM\Qwen3.8\bin\llama-server.exe" --model "C:\LocalLLM\Qwen3.8\models\Qwen3.8-27B-UD-Q4_K_M.gguf" --alias qwen3.8-local --host 127.0.0.1 --port 8080 --cors-origins localhost --ctx-size 8192 --parallel 1 --n-gpu-layers auto --fit on --fit-target 1024 --flash-attn auto --batch-size 512 --ubatch-size 128 --load-mode none --cache-ram 1024 --jinja --reasoning off --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0`;
 
+export const saveLaunchersCommand = String.raw`# 保存先は各行に直接指定しています。
 # 手動でダウンロードした場合も、この手順から実行できます。
-$requiredFiles = @(
-    'bin\llama-server.exe',
-    'bin\ggml-cuda.dll',
-    'models\Qwen3.8-27B-UD-Q4_K_M.gguf'
-)
-foreach ($relativePath in $requiredFiles) {
-    $filePath = Join-Path $root $relativePath
-    if (-not (Test-Path -LiteralPath $filePath -PathType Leaf)) {
-        throw "ファイルが見つかりません: $filePath"
-    }
+if (-not (Test-Path -LiteralPath 'C:\LocalLLM\Qwen3.8\bin\llama-server.exe' -PathType Leaf)) {
+    throw 'ファイルが見つかりません: C:\LocalLLM\Qwen3.8\bin\llama-server.exe'
+}
+if (-not (Test-Path -LiteralPath 'C:\LocalLLM\Qwen3.8\bin\ggml-cuda.dll' -PathType Leaf)) {
+    throw 'ファイルが見つかりません: C:\LocalLLM\Qwen3.8\bin\ggml-cuda.dll'
+}
+if (-not (Test-Path -LiteralPath 'C:\LocalLLM\Qwen3.8\models\Qwen3.8-27B-UD-Q4_K_M.gguf' -PathType Leaf)) {
+    throw 'ファイルが見つかりません: C:\LocalLLM\Qwen3.8\models\Qwen3.8-27B-UD-Q4_K_M.gguf'
 }
 
 # 起動ファイルを2つ作成します。実行するのはどちらか1つです。
-Set-Content -LiteralPath (Join-Path $root 'Start-Qwen.cmd') -Encoding Ascii -Value @'
+Set-Content -LiteralPath 'C:\LocalLLM\Qwen3.8\Start-Qwen.cmd' -Encoding Ascii -Value @'
 ${startCommand}
 '@
 
-Set-Content -LiteralPath (Join-Path $root 'Start-Qwen-MTP.cmd') -Encoding Ascii -Value @'
+Set-Content -LiteralPath 'C:\LocalLLM\Qwen3.8\Start-Qwen-MTP.cmd' -Encoding Ascii -Value @'
 ${startMtpCommand}
 '@
 
-Write-Host "起動ファイルを作成しました: $root"
-Start-Process explorer.exe -ArgumentList $root`;
+Write-Host '起動ファイルを作成しました: C:\LocalLLM\Qwen3.8'
+Start-Process explorer.exe -ArgumentList 'C:\LocalLLM\Qwen3.8'`;

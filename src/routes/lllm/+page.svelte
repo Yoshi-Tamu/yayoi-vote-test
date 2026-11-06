@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import CommandBlock from '$lib/CommandBlock.svelte';
-  import { prepareCommand, runtimeCommand, modelCommand, saveLaunchersCommand, startCommand, startMtpCommand } from '$lib/lllmSetup';
+  import { prepareCommand, runtimeCommand, modelCommand, directStartCommand, saveLaunchersCommand, startCommand, startMtpCommand } from '$lib/lllmSetup';
 </script>
 
 <svelte:head>
@@ -36,7 +36,7 @@
       <li><a href="#prepare">ドライバーと保存先を準備</a></li>
       <li><a href="#runtime">llama.cppを取得</a></li>
       <li><a href="#model">モデルを取得</a></li>
-      <li><a href="#launch">起動ファイルを作成</a></li>
+      <li><a href="#launch">1行で起動する</a></li>
       <li><a href="#chat">ブラウザーで使う</a></li>
       <li><a href="#speed">MTPと速度の調整</a></li>
     </ol>
@@ -75,12 +75,18 @@
   </section>
 
   <section id="launch" class="section">
-    <h2><span class="step">04</span> 起動ファイルを作成</h2>
-    <p><strong>手動で本体・DLL・モデルの配置まで終わっている場合は、ここから進められます。</strong> 2080 TiのPCでWindows PowerShellを開き、下の「PowerShell：起動ファイルを保存」をコピーして貼り付け、Enterを押してください。</p>
-    <p>通常版の <code>Start-Qwen.cmd</code> と、任意で試せるMTP版の <code>Start-Qwen-MTP.cmd</code> を作成します。このコマンド内で保存先を指定するため、新しく開いたPowerShellでも実行できます。</p>
-    <CommandBlock label="PowerShell：起動ファイルを保存" command={saveLaunchersCommand} />
-    <p>開いたフォルダで、まず <strong>Start-Qwen.cmdをダブルクリック</strong>します。黒いウィンドウにログが流れ、モデルを読み込みます。起動中はこのウィンドウを開いたままにします。</p>
-    <p>「ファイルが見つかりません」と出た場合は、表示されたパスを確認してください。ZIPの中身が <code>bin</code> の直下に展開されているか、GGUFが <code>models</code> に指定の名前で保存されているかを確認します。</p>
+    <h2><span class="step">04</span> 1行で起動する</h2>
+    <p><strong>手動で本体・DLL・モデルの配置まで終わっている場合は、ここから進められます。</strong> 2080 TiのPCでWindows PowerShellを新しく開き、下の「コピー」を押して、1行全体を貼り付けてEnterを押してください。</p>
+    <p>この1行で直接サーバーを起動します。ログが流れてモデルの読み込みが始まったら、このPowerShellを開いたまま手順05へ進んでください。</p>
+    <CommandBlock label="PowerShell：1行で直接起動" command={directStartCommand} />
+    <p>貼り付け前から <code>&gt;&gt;</code> と表示されている場合は、まず <kbd>Ctrl</kbd> + <kbd>C</kbd> で途中の入力を取り消すか、PowerShellを開き直してください。</p>
+    <details>
+      <summary>起動ファイルを保存して使う場合（任意）</summary>
+      <p>以下を別のPowerShellに貼り付けると、通常版の <code>Start-Qwen.cmd</code> とMTP版の <code>Start-Qwen-MTP.cmd</code> を保存します。1行コマンドですでに起動している場合は、サーバーを終了してから起動ファイルを使ってください。</p>
+      <CommandBlock label="PowerShell：起動ファイルを保存" command={saveLaunchersCommand} />
+      <p>開いたフォルダで <strong>Start-Qwen.cmdをダブルクリック</strong>します。起動中は黒いウィンドウを開いたままにします。</p>
+      <p>「ファイルが見つかりません」と出た場合は、表示されたパスを確認してください。ZIPの中身は <code>bin</code> の直下に展開し、GGUFは <code>models</code> に指定の名前で保存します。</p>
+    </details>
     <details>
       <summary>通常版の起動設定を見る</summary>
       <p>以下は作成されるCMDファイルの内容です。メモ帳で手動保存する場合に使います。</p>
@@ -96,7 +102,7 @@
       <li>アドレス欄に <code>http://127.0.0.1:8080</code> と入力します。</li>
       <li>新しいチャットを作り、「日本語で自己紹介して」と送って返答を確認します。</li>
     </ol>
-    <p>終了するときは、サーバーの黒いウィンドウで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押します。ブラウザーを閉じただけではモデルは終了しません。次回は <code>Start-Qwen.cmd</code> を開き、同じアドレスへアクセスします。</p>
+    <p>終了するときは、サーバーを起動したウィンドウで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押します。ブラウザーを閉じただけではモデルは終了しません。次回は手順04の1行コマンドを再実行します。起動ファイルを保存した場合は <code>Start-Qwen.cmd</code> からも起動できます。</p>
     <p>初期設定はThinkingをオフにしています。長く考えさせる設定は出力トークンが増えるため、完了までの時間も長くなります。チャットを分ける場合はWeb UIの新しいチャットを使います。</p>
     <div class="note"><strong>このページはセットアップの説明です。</strong> 上の <code>127.0.0.1</code> は、ブラウザーを開いた端末自身を指します。スマホから2080 Tiのモデルへ接続する設定は含みません。サーバーはPC内からのみ接続できる設定です。</div>
     <details>
@@ -112,7 +118,7 @@
 
   <section id="speed" class="section">
     <h2><span class="step">06</span> MTPと速度の調整</h2>
-    <p>通常版で返答できたら、一度サーバーを終了し、<strong>Start-Qwen-MTP.cmd</strong> を開きます。同じモデル内のMTPヘッドを使う投機的デコードを試せます。追加モデルのダウンロードは不要です。</p>
+    <p>通常版で返答できたら、手順04の「起動ファイルを保存して使う場合」で起動ファイルを作成します。一度サーバーを終了して <strong>Start-Qwen-MTP.cmd</strong> を開くと、同じモデル内のMTPヘッドを使う投機的デコードを試せます。追加モデルのダウンロードは不要です。</p>
     <p>MTPは複数トークンの候補を作り、検証しながら生成を進める仕組みです。MoEはモデル自体の構造なので、これとは別です。文章やPC構成によっては速くならないため、同じ質問・同じThinking設定で通常版と比較してください。</p>
     <details>
       <summary>MTP版の起動設定を見る</summary>
@@ -128,6 +134,10 @@
 
   <section id="troubleshooting" class="section">
     <h2>困ったとき</h2>
+    <details>
+      <summary>Join-Pathで「引数がnull」と出る</summary>
+      <p>途中の入力を <kbd>Ctrl</kbd> + <kbd>C</kbd> で取り消し、手順04の「1行で直接起動」を丸ごとコピーして実行してください。保存先を直接指定しているため、前の手順の変数を使わずに起動できます。</p>
+    </details>
     <details>
       <summary>nvidia-smiが見つからない / CUDAデバイスが出ない</summary>
       <p>NVIDIAドライバーを更新してPCを再起動します。CPU版やCUDA 13版ではなく、この手順のWindows x64 CUDA 12.4版を使っているかも確認してください。</p>
