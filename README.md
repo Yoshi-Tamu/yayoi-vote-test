@@ -14,6 +14,7 @@ npm run dev
 - 利用者画面: `http://localhost:5173/`
 - 管理画面: `http://localhost:5173/admin/`
 - 公開結果: `http://localhost:5173/kekka/`（PIN不要）
+- RTX 2080 Ti向けllama.cppセットアップ手順: `http://localhost:5173/lllm/`
 
 `.dev.vars` の `ADMIN_PIN`、`VOTER_PIN`、`SESSION_SECRET` はローカル用の値に変更してください。`.dev.vars` はGitの管理対象外です。
 
